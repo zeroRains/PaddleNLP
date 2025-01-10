@@ -824,7 +824,6 @@ class AutoInferenceModelForCausalLM(_BaseAutoModelClass):
         # Check whether the model_type is img2txt in inference mode
         if model_arg.model_type is not None and predictor_args.mode == "dynamic":
             model_name = MODEL_FOR_CAUSAL_LM_INFERENCE_MAPPING_NAMES[model_arg.model_type]
-            predictor_args.block_attn = 0
             if model_name is None:
                 raise ValueError(
                     f"Model type {model_arg.model_type} is not supported for {config.architectures[0]} inference."
