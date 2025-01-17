@@ -45,7 +45,7 @@ if not is_paddlenlp_ops_available():
 if (
     paddle.device.get_all_custom_device_type() is not None and len(paddle.device.get_all_custom_device_type()) > 0
 ) or paddle.is_compiled_with_cuda():
-    from paddlenlp_ops import rebuild_padding_v2
+    from paddlenlp.custom_ops import rebuild_padding_v2
 
 
 def use_cutlass_fp8_gemm():
@@ -55,14 +55,16 @@ def use_cutlass_fp8_gemm():
 if paddle.is_compiled_with_cuda():
     if use_cutlass_fp8_gemm():
         logger.info("cutlass fp8 gemm is used. you can turn it off by setting FLAGS_CUTLASS_FP8_GEMM to False.")
-        from paddlenlp_ops import (
+        from paddlenlp.custom_ops import (
             cutlass_fp8_fp8_fp8_dual_gemm_fused as fp8_dual_gemm_fused,
         )
-        from paddlenlp_ops import cutlass_fp8_fp8_half_gemm_fused as fp8_gemm_fused
+        from paddlenlp.custom_ops import (
+            cutlass_fp8_fp8_half_gemm_fused as fp8_gemm_fused,
+        )
     else:
         from paddle.linalg import fp8_fp8_half_gemm_fused as fp8_gemm_fused
     try:
-        from paddlenlp_ops import (
+        from paddlenlp.custom_ops import (
             dequant_int8,
             encode_rotary_qk,
             qkv_transpose_split,
@@ -1034,7 +1036,7 @@ class FusedMultiTransformerBase(Layer):
 
         if self.config.append_attn:
 
-            from paddlenlp_ops import get_block_shape_and_split_kv_block
+            from paddlenlp.custom_ops import get_block_shape_and_split_kv_block
 
             (
                 kwargs["encoder_batch_ids"],
@@ -1649,7 +1651,7 @@ class FusedMultiTransformerAvx(Layer):
         step_idx=None,
         **kwargs,
     ):
-        from paddlenlp_ops import xft_transformer
+        from paddlenlp.custom_ops import xft_transformer
 
         xft_out = xft_transformer(
             paddle.cast(src, "float32"),  # input
@@ -2028,7 +2030,7 @@ class FusedMultiTransformerA8W8(FusedMultiTransformerBase):
                 out_linear_out = dequant_int8(out_linear_out, self.linear_out_scales[i], self._dtype)
             else:
                 if self.use_gemm_dequant:
-                    from paddlenlp_ops import gemm_dequant
+                    from paddlenlp.custom_ops import gemm_dequant
 
                     out_linear_out = gemm_dequant(
                         fmha_out, self.linear_weights[i], self.linear_out_scales[i], self._dtype
@@ -2089,7 +2091,7 @@ class FusedMultiTransformerA8W8(FusedMultiTransformerBase):
                 ffn2_out = dequant_int8(ffn2_out, self.ffn2_out_scales[i], self._dtype)
             else:
                 if self.use_gemm_dequant:
-                    from paddlenlp_ops import gemm_dequant
+                    from paddlenlp.custom_ops import gemm_dequant
 
                     ffn2_out = gemm_dequant(ffn1_out, self.ffn2_weights[i], self.ffn2_out_scales[i], self._dtype)
                 else:
@@ -2149,7 +2151,7 @@ class FusedBlockMultiTransformer(FusedMultiTransformerBase):
         **kwargs,
     ):
         if self.config.append_attn:
-            from paddlenlp_ops import append_attention
+            from paddlenlp.custom_ops import append_attention
 
             fmha_out = append_attention(
                 qkv_out,
@@ -2343,7 +2345,7 @@ class FusedBlockMultiTransformerA8W8(FusedBlockMultiTransformer, FusedMultiTrans
             cache_quant_type_str = "cache_int8"
 
         if self.config.append_attn:
-            from paddlenlp_ops import append_attention
+            from paddlenlp.custom_ops import append_attention
 
             fmha_out = append_attention(
                 qkv_out,
@@ -2702,7 +2704,7 @@ class FusedBlockMultiTransformerFP8(FusedBlockMultiTransformer):
             cache_quant_type_str = "cache_int8"
 
         if self.config.append_attn:
-            from paddlenlp_ops import append_attention
+            from paddlenlp.custom_ops import append_attention
 
             fmha_out = append_attention(
                 qkv_out,

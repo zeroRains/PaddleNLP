@@ -72,7 +72,7 @@ class InferenceWithReferenceProposer(Proposer):
         seq_lens_encoder = model_inputs["seq_lens_encoder"].cpu()
         seq_lens_decoder = model_inputs["seq_lens_decoder"].cpu()
 
-        from paddlenlp_ops import ngram_match
+        from paddlenlp.custom_ops import ngram_match
 
         ngram_match(
             self.input_ids_cpu,
