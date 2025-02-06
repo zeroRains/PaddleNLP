@@ -1740,7 +1740,6 @@ class LlamaForCausalLMBlockInferenceModel(GenerationBlockInferenceModel, LlamaPr
         return cls
 
 
-
 class EagleLlamaForCausalLMBlockInferenceModel(LlamaForCausalLMBlockInferenceModel):
     def __init__(self, config):
         super(LlamaForCausalLMBlockInferenceModel, self).__init__(config)
@@ -1856,10 +1855,9 @@ class EagleLlamaForCausalLMBlockInferenceModel(LlamaForCausalLMBlockInferenceMod
         return logits, hidden_states
 
 
-
-class LlamaForMiniGPT4InferenceModel(LlamaForCausalLMInferenceModel):
+class LlamaForMiniGPT4InferenceModel(LlamaForCausalLMBlockInferenceModel):
     """
-    This class is 99% like LlamaForCausalLMInferenceModel.
+    This class is 99% like LlamaForCausalLMBlockInferenceModel.
     Used only for miniGPT4's second part.
     """
 
